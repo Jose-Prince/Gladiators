@@ -64,6 +64,9 @@ namespace StarterAssets
 		private float _jumpTimeoutDelta;
 		private float _fallTimeoutDelta;
 
+		private Animator anim;
+
+		public bool attack;
 	
 #if ENABLE_INPUT_SYSTEM
 		private PlayerInput _playerInput;
@@ -97,6 +100,7 @@ namespace StarterAssets
 
 		private void Start()
 		{
+			anim = GetComponentInChildren<Animator>();
 			_controller = GetComponent<CharacterController>();
 			_input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM
@@ -115,6 +119,17 @@ namespace StarterAssets
 			JumpAndGravity();
 			GroundedCheck();
 			Move();
+
+			if (Input.GetMouseButtonDown(0))
+			{
+				Debug.Log("Attacking");
+				anim.SetTrigger("Attack");
+			}
+		}
+
+		public void OnAttack(InputValue value)
+		{
+			attack = value.isPressed;
 		}
 
 		private void LateUpdate()
@@ -196,6 +211,7 @@ namespace StarterAssets
 
 			// move the player
 			_controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+			anim.SetFloat("Speed", _speed);
 		}
 
 		private void JumpAndGravity()
